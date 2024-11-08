@@ -1,5 +1,6 @@
 package com.projetos.curso.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -21,8 +22,13 @@ public class Product implements Serializable {
     private String imgUrl;
 
     @ManyToMany
-    @JoinTable(name = "tb_product_category", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
+    @JoinTable(name = "tb_product_category",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
+    @JsonIgnore  // Evita serializar as categorias recursivamente
     private Set<Category> categories = new HashSet<>();
+
+    // Construtores, getters e setters
 
     public Long getId() {
         return id;
@@ -71,17 +77,17 @@ public class Product implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Product product)) return false;
+        if (!(o instanceof Product)) return false;
+        Product product = (Product) o;
         return Objects.equals(id, product.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hash(id);
     }
 
-    public Product(){
-
+    public Product() {
     }
 
     public Product(Long id, String name, String description, Double price, String imgUrl) {
